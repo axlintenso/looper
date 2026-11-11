@@ -16,16 +16,13 @@
 </head>
 <body>
   <main>
-    <header>
-      <h1>Looper</h1>
-      <p id="status">Conecta tu iRig y toca «Activar micrófono»</p>
-    </header>
-
     <div class="meter" aria-label="Nivel de entrada"><div id="meter-fill"></div></div>
-    <div id="time">0.0 s</div>
 
-    <button id="main" class="big" data-state="off">Activar micrófono</button>
-    <p id="swipe-hint" class="swipe-hint" hidden>← Desliza hacia cualquier lado para borrar →</p>
+    <button id="main" class="big" data-state="off">
+      <span id="time">0.0 s</span>
+      <span id="label">Activar micrófono</span>
+      <span id="status">Conecta tu iRig y toca la pantalla</span>
+    </button>
 
     <details>
       <summary>Ajustes</summary>

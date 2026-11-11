@@ -3,31 +3,36 @@
 html, body {
   margin: 0;
   height: 100%;
+  overflow: hidden;
   background: #111;
   color: #eee;
   font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
   -webkit-user-select: none;
   user-select: none;
   -webkit-tap-highlight-color: transparent;
+  overscroll-behavior: none;
 }
 
+/* La app ocupa exactamente la pantalla visible (respetando el notch y la barra de inicio). */
 main {
-  min-height: 100%;
-  max-width: 480px;
-  margin: 0 auto;
-  padding: calc(env(safe-area-inset-top) + 16px) 20px calc(env(safe-area-inset-bottom) + 20px);
+  height: 100vh;
+  height: 100dvh;
+  padding:
+    calc(env(safe-area-inset-top) + 6px)
+    calc(env(safe-area-inset-right) + 6px)
+    calc(env(safe-area-inset-bottom) + 4px)
+    calc(env(safe-area-inset-left) + 6px);
   display: flex;
   flex-direction: column;
-  gap: 18px;
+  gap: 6px;
 }
 
-header h1 { margin: 0; font-size: 1.6rem; letter-spacing: 0.04em; }
-#status { margin: 6px 0 0; color: #aaa; min-height: 2.6em; }
-
+/* Medidor de nivel: una línea delgada arriba */
 .meter {
-  height: 10px;
+  flex: none;
+  height: 5px;
   background: #222;
-  border-radius: 5px;
+  border-radius: 3px;
   overflow: hidden;
 }
 #meter-fill {
@@ -37,36 +42,48 @@ header h1 { margin: 0; font-size: 1.6rem; letter-spacing: 0.04em; }
   transition: width 60ms linear;
 }
 
-#time {
-  font-size: 2.6rem;
-  font-variant-numeric: tabular-nums;
-  text-align: center;
-}
-
-button {
-  font: inherit;
-  font-size: 1.2rem;
-  font-weight: 600;
-  border: none;
-  border-radius: 18px;
-  padding: 22px 10px;
-  color: #fff;
-  background: #333;
-  touch-action: manipulation;
-  cursor: pointer;
-}
-button:disabled { opacity: 0.35; cursor: default; }
-button:active:not(:disabled) { filter: brightness(1.3); }
-
+/* El botón gigante: todo el espacio disponible */
 .big {
   flex: 1;
-  min-height: 320px;
-  touch-action: none; /* el deslizamiento para borrar no debe desplazar la página */
-  transition: transform 180ms ease-out, opacity 180ms ease-out;
-  font-size: 2rem;
+  min-height: 0;
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 18px;
+  padding: 20px;
+  border: none;
   border-radius: 28px;
+  color: #fff;
   background: #2d6cdf;
+  font: inherit;
+  cursor: pointer;
+  touch-action: none; /* el deslizamiento para borrar no debe desplazar la página */
+  transition: transform 180ms ease-out, opacity 180ms ease-out, background-color 120ms;
 }
+.big:disabled { cursor: default; }
+.big:active:not(:disabled) { filter: brightness(1.15); }
+.big.dragging { transition: none; }
+
+#label {
+  font-size: clamp(2rem, 11vw, 3.4rem);
+  font-weight: 700;
+}
+#time {
+  font-size: clamp(1.6rem, 9vw, 2.6rem);
+  font-variant-numeric: tabular-nums;
+  opacity: 0.9;
+}
+#status {
+  max-width: 22em;
+  font-size: 0.95rem;
+  line-height: 1.35;
+  opacity: 0.8;
+}
+.big[data-state="off"] #time,
+.big[data-state="ready"] #time { visibility: hidden; }
+
 .big[data-state="ready"]     { background: #c0392b; }
 .big[data-state="recording"] { background: #e74c3c; animation: pulse 1s infinite; }
 .big[data-state="finishing"] { background: #e67e22; }
@@ -75,20 +92,12 @@ button:active:not(:disabled) { filter: brightness(1.3); }
 
 @keyframes pulse {
   0%, 100% { filter: brightness(1); }
-  50%      { filter: brightness(1.35); }
+  50%      { filter: brightness(1.3); }
 }
 
-.big.dragging { transition: none; }
-
-.swipe-hint {
-  margin: -6px 0 0;
-  text-align: center;
-  color: #777;
-  font-size: 0.9rem;
-}
-
-details { color: #aaa; }
-summary { cursor: pointer; padding: 6px 0; }
-details label { display: block; margin-top: 10px; }
-input[type="range"] { width: 100%; margin: 12px 0; }
-.hint { font-size: 0.85rem; line-height: 1.4; }
+/* Ajustes: una línea pequeña abajo; al abrirse, el botón se encoge un poco */
+details { flex: none; color: #888; font-size: 0.85rem; }
+summary { cursor: pointer; padding: 4px 6px; }
+details label { display: block; margin-top: 6px; }
+input[type="range"] { width: 100%; margin: 10px 0; }
+.hint { font-size: 0.8rem; line-height: 1.4; margin: 6px 0; }

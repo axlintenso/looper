@@ -5,7 +5,7 @@ const $ = (id) => document.getElementById(id);
 const ui = {
   status: $('status'),
   main: $('main'),
-  swipeHint: $('swipe-hint'),
+  label: $('label'),
   time: $('time'),
   meter: $('meter-fill'),
   latency: $('latency'),
@@ -54,15 +54,14 @@ function setState(next) {
     playing: '❚❚ Pausar',
     paused: '▶ Reproducir',
   };
-  ui.main.textContent = labels[next];
+  ui.label.textContent = labels[next];
   ui.main.disabled = next === 'finishing';
-  ui.swipeHint.hidden = !(next === 'recording' || next === 'playing' || next === 'paused');
 
   const messages = {
-    ready: 'Listo. Toca el botón justo cuando empieces a tocar.',
-    recording: 'Grabando… toca otra vez en el tiempo exacto en que debe repetirse.',
-    playing: 'Sonando en loop. Toca para pausar; desliza para borrar.',
-    paused: 'En pausa. Toca para reproducir desde el inicio; desliza para borrar.',
+    ready: 'Toca justo cuando empieces a tocar',
+    recording: 'Toca otra vez en el tiempo exacto en que debe repetirse',
+    playing: 'Toca para pausar · desliza para borrar',
+    paused: 'Toca para reproducir desde el inicio · desliza para borrar',
   };
   if (messages[next]) setStatus(messages[next]);
 }
@@ -368,4 +367,4 @@ if ('serviceWorker' in navigator) {
 }
 
 setState('off');
-setStatus('Conecta tu iRig y toca «Activar micrófono».');
+setStatus('Conecta tu iRig y toca la pantalla');
