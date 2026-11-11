@@ -361,5 +361,11 @@ function tick() {
   requestAnimationFrame(tick);
 }
 requestAnimationFrame(tick);
+
+// ---------- Modo sin internet ----------
+if ('serviceWorker' in navigator) {
+  navigator.serviceWorker.register('sw.js').catch((err) => console.warn('Sin modo offline:', err));
+}
+
 setState('off');
 setStatus('Conecta tu iRig y toca «Activar micrófono».');

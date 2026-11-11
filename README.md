@@ -13,6 +13,7 @@ Looper de guitarra como app web (funciona en iPhone, Android y computadora).
 | `app.js` | Lógica: grabar, cerrar el loop, pausar y borrar |
 | `recorder-worklet.js` | Captura el audio con precisión de muestra |
 | `manifest.json`, `icon*` | Permiten instalarla en la pantalla de inicio |
+| `sw.js` | Guarda una copia para usarla sin internet |
 | `servidor-local.js` | Solo para probarla en la computadora: `node servidor-local.js` |
 
 ## Notas
