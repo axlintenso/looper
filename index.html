@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover, user-scalable=no">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Looper">
+  <meta name="theme-color" content="#111111">
+  <link rel="manifest" href="manifest.json">
+  <link rel="icon" href="icon.svg" type="image/svg+xml">
+  <link rel="apple-touch-icon" href="icon-180.png">
+  <link rel="stylesheet" href="style.css">
+  <title>Looper</title>
+</head>
+<body>
+  <main>
+    <header>
+      <h1>Looper</h1>
+      <p id="status">Conecta tu iRig y toca «Activar micrófono»</p>
+    </header>
+
+    <div class="meter" aria-label="Nivel de entrada"><div id="meter-fill"></div></div>
+    <div id="time">0.0 s</div>
+
+    <button id="main" class="big" data-state="off">Activar micrófono</button>
+
+    <div class="row">
+      <button id="pause" disabled>Pausar</button>
+      <button id="clear" disabled>Borrar</button>
+    </div>
+
+    <details>
+      <summary>Ajustes</summary>
+      <label for="latency">Ajuste de sincronía: <strong id="lat-val">0</strong> ms</label>
+      <input type="range" id="latency" min="0" max="250" step="1" value="0">
+      <p class="hint">
+        Si al cerrar el loop la repetición entra tarde respecto a lo que venías tocando,
+        sube este valor; si entra adelantada, bájalo. Se guarda automáticamente.
+      </p>
+      <p class="hint">
+        Pedal o teclado Bluetooth: <b>Espacio / ↓ / AvPág</b> = grabar y cerrar loop,
+        <b>↑ / RePág</b> = pausar, <b>Supr / Retroceso</b> = borrar.
+      </p>
+    </details>
+  </main>
+  <script src="app.js"></script>
+</body>
+</html>

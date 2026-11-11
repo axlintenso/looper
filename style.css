@@ -1,0 +1,85 @@
+* { box-sizing: border-box; }
+
+html, body {
+  margin: 0;
+  height: 100%;
+  background: #111;
+  color: #eee;
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+  -webkit-user-select: none;
+  user-select: none;
+  -webkit-tap-highlight-color: transparent;
+}
+
+main {
+  min-height: 100%;
+  max-width: 480px;
+  margin: 0 auto;
+  padding: calc(env(safe-area-inset-top) + 16px) 20px calc(env(safe-area-inset-bottom) + 20px);
+  display: flex;
+  flex-direction: column;
+  gap: 18px;
+}
+
+header h1 { margin: 0; font-size: 1.6rem; letter-spacing: 0.04em; }
+#status { margin: 6px 0 0; color: #aaa; min-height: 2.6em; }
+
+.meter {
+  height: 10px;
+  background: #222;
+  border-radius: 5px;
+  overflow: hidden;
+}
+#meter-fill {
+  height: 100%;
+  width: 0%;
+  background: linear-gradient(90deg, #2ecc71 0%, #2ecc71 70%, #f1c40f 85%, #e74c3c 100%);
+  transition: width 60ms linear;
+}
+
+#time {
+  font-size: 2.6rem;
+  font-variant-numeric: tabular-nums;
+  text-align: center;
+}
+
+button {
+  font: inherit;
+  font-size: 1.2rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 18px;
+  padding: 22px 10px;
+  color: #fff;
+  background: #333;
+  touch-action: manipulation;
+  cursor: pointer;
+}
+button:disabled { opacity: 0.35; cursor: default; }
+button:active:not(:disabled) { filter: brightness(1.3); }
+
+.big {
+  flex: 1;
+  min-height: 220px;
+  font-size: 2rem;
+  border-radius: 28px;
+  background: #2d6cdf;
+}
+.big[data-state="ready"]     { background: #c0392b; }
+.big[data-state="recording"] { background: #e74c3c; animation: pulse 1s infinite; }
+.big[data-state="finishing"] { background: #e67e22; }
+.big[data-state="playing"]   { background: #27ae60; }
+.big[data-state="paused"]    { background: #2c3e50; }
+
+@keyframes pulse {
+  0%, 100% { filter: brightness(1); }
+  50%      { filter: brightness(1.35); }
+}
+
+.row { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; }
+
+details { color: #aaa; }
+summary { cursor: pointer; padding: 6px 0; }
+details label { display: block; margin-top: 10px; }
+input[type="range"] { width: 100%; margin: 12px 0; }
+.hint { font-size: 0.85rem; line-height: 1.4; }
