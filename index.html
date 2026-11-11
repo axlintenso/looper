@@ -25,11 +25,7 @@
     <div id="time">0.0 s</div>
 
     <button id="main" class="big" data-state="off">Activar micrófono</button>
-
-    <div class="row">
-      <button id="pause" disabled>Pausar</button>
-      <button id="clear" disabled>Borrar</button>
-    </div>
+    <p id="swipe-hint" class="swipe-hint" hidden>← Desliza hacia cualquier lado para borrar →</p>
 
     <details>
       <summary>Ajustes</summary>
@@ -40,8 +36,8 @@
         sube este valor; si entra adelantada, bájalo. Se guarda automáticamente.
       </p>
       <p class="hint">
-        Pedal o teclado Bluetooth: <b>Espacio / ↓ / AvPág</b> = grabar y cerrar loop,
-        <b>↑ / RePág</b> = pausar, <b>Supr / Retroceso</b> = borrar.
+        Pedal o teclado Bluetooth: <b>Espacio / ↓ / → / AvPág</b> = lo mismo que tocar el botón
+        (grabar, cerrar loop, pausar, reproducir); <b>↑ / ← / RePág / Supr</b> = borrar.
       </p>
     </details>
   </main>

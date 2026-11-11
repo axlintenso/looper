@@ -5,8 +5,7 @@ const $ = (id) => document.getElementById(id);
 const ui = {
   status: $('status'),
   main: $('main'),
-  pause: $('pause'),
-  clear: $('clear'),
+  swipeHint: $('swipe-hint'),
   time: $('time'),
   meter: $('meter-fill'),
   latency: $('latency'),
@@ -52,21 +51,18 @@ function setState(next) {
     ready: '● Grabar',
     recording: '■ Cerrar loop',
     finishing: '…',
-    playing: '▶ Sonando',
-    paused: '❚❚ En pausa',
+    playing: '❚❚ Pausar',
+    paused: '▶ Reproducir',
   };
   ui.main.textContent = labels[next];
-  ui.main.disabled = next === 'finishing' || next === 'playing' || next === 'paused';
-  ui.pause.disabled = !(next === 'playing' || next === 'paused');
-  ui.pause.textContent = next === 'paused' ? 'Reanudar' : 'Pausar';
-  ui.clear.disabled = !(next === 'recording' || next === 'playing' || next === 'paused');
-  ui.clear.textContent = next === 'recording' ? 'Cancelar' : 'Borrar';
+  ui.main.disabled = next === 'finishing';
+  ui.swipeHint.hidden = !(next === 'recording' || next === 'playing' || next === 'paused');
 
   const messages = {
-    ready: 'Listo. Toca «Grabar» justo cuando empieces a tocar.',
-    recording: 'Grabando… toca «Cerrar loop» en el tiempo exacto en que debe repetirse.',
-    playing: 'Sonando en loop. Puedes pausarlo o borrarlo.',
-    paused: 'En pausa. «Reanudar» lo hace sonar desde el inicio.',
+    ready: 'Listo. Toca el botón justo cuando empieces a tocar.',
+    recording: 'Grabando… toca otra vez en el tiempo exacto en que debe repetirse.',
+    playing: 'Sonando en loop. Toca para pausar; desliza para borrar.',
+    paused: 'En pausa. Toca para reproducir desde el inicio; desliza para borrar.',
   };
   if (messages[next]) setStatus(messages[next]);
 }
@@ -271,31 +267,71 @@ function clearLoop() {
   setStatus('Loop borrado. Listo para grabar otro.');
 }
 
+// Un solo botón: grabar → cerrar loop → pausar ⇄ reproducir
 function mainAction() {
   if (state === 'ready') startRecording();
   else if (state === 'recording') closeLoop();
+  else if (state === 'playing' || state === 'paused') togglePause();
 }
 
-// ---------- Botones ----------
-// "pointerdown" reacciona en cuanto tocas la pantalla (más preciso para el tiempo);
-// la activación inicial usa "click" porque iOS lo exige para el audio.
+// ---------- Botón gigante + deslizar para borrar ----------
+// La acción ocurre en cuanto el dedo toca la pantalla (más preciso para el tiempo).
+// Si después el dedo se desliza más de SWIPE_PX hacia cualquier lado, se borra el loop.
+// La activación inicial usa "click" porque iOS lo exige para el audio.
+const SWIPE_PX = 70;
+let drag = null; // { id, x, y }
+
 ui.main.addEventListener('pointerdown', (e) => {
-  if (state === 'ready' || state === 'recording') { e.preventDefault(); mainAction(); }
+  if (state === 'off' || state === 'finishing') return;
+  e.preventDefault();
+  drag = { id: e.pointerId, x: e.clientX, y: e.clientY };
+  try { ui.main.setPointerCapture(e.pointerId); } catch { /* ignorar */ }
+  ui.main.classList.add('dragging');
+  mainAction();
 });
+
+ui.main.addEventListener('pointermove', (e) => {
+  if (!drag || e.pointerId !== drag.id) return;
+  const dx = e.clientX - drag.x;
+  const dy = e.clientY - drag.y;
+  const dist = Math.hypot(dx, dy);
+  ui.main.style.transform = `translate(${dx}px, ${dy}px)`;
+  ui.main.style.opacity = String(Math.max(0.3, 1 - dist / (SWIPE_PX * 3)));
+  if (dist >= SWIPE_PX) {
+    drag = null;
+    ui.main.classList.remove('dragging');
+    // Sale volando en la dirección del deslizamiento y regresa al centro.
+    ui.main.style.transform = `translate(${dx * 4}px, ${dy * 4}px)`;
+    ui.main.style.opacity = '0';
+    clearLoop();
+    setTimeout(resetButtonPosition, 200);
+  }
+});
+
+function endDrag(e) {
+  if (!drag || e.pointerId !== drag.id) return;
+  drag = null;
+  ui.main.classList.remove('dragging');
+  resetButtonPosition();
+}
+ui.main.addEventListener('pointerup', endDrag);
+ui.main.addEventListener('pointercancel', endDrag);
+
+function resetButtonPosition() {
+  ui.main.style.transform = '';
+  ui.main.style.opacity = '';
+}
+
 ui.main.addEventListener('click', () => { if (state === 'off') activate(); });
-ui.pause.addEventListener('pointerdown', (e) => { e.preventDefault(); togglePause(); });
-ui.clear.addEventListener('pointerdown', (e) => { e.preventDefault(); clearLoop(); });
 
 // Pedal Bluetooth o teclado
 document.addEventListener('keydown', (e) => {
-  if (e.repeat) return;
+  if (e.repeat || e.target === ui.latency) return;
   const k = e.key;
   if (k === ' ' || k === 'Enter' || k === 'ArrowDown' || k === 'PageDown' || k === 'ArrowRight') {
     e.preventDefault();
     if (state === 'off') activate(); else mainAction();
-  } else if (k === 'ArrowUp' || k === 'PageUp' || k === 'ArrowLeft') {
-    e.preventDefault(); togglePause();
-  } else if (k === 'Delete' || k === 'Backspace') {
+  } else if (k === 'ArrowUp' || k === 'PageUp' || k === 'ArrowLeft' || k === 'Delete' || k === 'Backspace') {
     e.preventDefault(); clearLoop();
   }
 });
